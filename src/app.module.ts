@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import configuration, { validationSchema } from './config/configuration';
+import { applicationConfig, databaseConfig, validationSchema } from './config';
 
 @Module({
   imports: [
@@ -14,7 +14,10 @@ import configuration, { validationSchema } from './config/configuration';
       cache: true,
       expandVariables: true,
       validationSchema,
-      load: [configuration],
+      load: [applicationConfig, databaseConfig],
+      validationOptions: {
+        allowUnknown: true,
+      },
     }),
   ],
   controllers: [AppController],

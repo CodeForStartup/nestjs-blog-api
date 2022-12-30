@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Inject } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { applicationConfig } from './config';
 
 @Injectable()
 export class AppService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    @Inject(applicationConfig.KEY)
+    private appConfig: ConfigType<typeof applicationConfig>,
+  ) {}
 
   getHello(): string {
-    return this.configService.get<string>('port');
+    return `PORT: ${this.appConfig.port}`;
   }
 }
