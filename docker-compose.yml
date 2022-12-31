@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: codeforstartup_db
+    image: postgres
+    restart: always
+    port:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=1111
