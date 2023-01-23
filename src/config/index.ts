@@ -4,6 +4,7 @@ import databaseConfig from './database.config';
 
 export const validationSchema = Joi.object({
   PORT: Joi.number().default(3000),
+  API_PREFIX: Joi.string().default('api'),
   DATABASE_HOST: Joi.string().default('localhost'),
   DATABASE_PORT: Joi.number().default(5432),
   DATABASE_USERNAME: Joi.string().default('postgres'),
