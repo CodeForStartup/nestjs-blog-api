@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { applicationConfig, databaseConfig, validationSchema } from './config';
+import { applicationConfig, databaseConfig } from './config';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -15,7 +16,6 @@ import { UserModule } from './modules/user/user.module';
       isGlobal: true,
       cache: true,
       expandVariables: true,
-      validationSchema,
       load: [applicationConfig, databaseConfig],
       validationOptions: {
         allowUnknown: true,
@@ -27,7 +27,7 @@ import { UserModule } from './modules/user/user.module';
         type: 'postgres',
         keepConnectionAlive: true,
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: configService.get('database.synchronize'),
         host: configService.get('database.host'),
         port: configService.get('database.port'),
         username: configService.get('database.username'),
@@ -36,6 +36,10 @@ import { UserModule } from './modules/user/user.module';
         entities: ['dist/entities/*.entity.{ts,js}'],
       }),
       inject: [ConfigService],
+      dataSourceFactory: async (options) => {
+        const dataSource = await new DataSource(options).initialize();
+        return dataSource;
+      },
     }),
     UserModule,
   ],
