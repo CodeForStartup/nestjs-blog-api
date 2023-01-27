@@ -34,12 +34,11 @@ import { UserModule } from './modules/user/user.module';
         password: configService.get('database.password'),
         database: configService.get('database.database'),
         entities: ['dist/entities/*.entity.{ts,js}'],
+        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
       }),
       inject: [ConfigService],
-      dataSourceFactory: async (options) => {
-        const dataSource = await new DataSource(options).initialize();
-        return dataSource;
-      },
+      dataSourceFactory: async (options) =>
+        new DataSource(options).initialize(),
     }),
     UserModule,
   ],

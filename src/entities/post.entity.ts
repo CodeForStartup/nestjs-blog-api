@@ -35,5 +35,5 @@ export class Post extends BaseEntity {
   tags: Tag[];
 
   @OneToMany(() => PostItem, (postItem) => postItem.post)
-  postItems: Post[];
+  postItems: PostItem[];
 }

@@ -7,8 +7,6 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
-    console.warn('>>>>>>>>>>>>');
-    console.warn(this.configService.get('database.password'));
     return {
       type: this.configService.get('database.type'),
       url: this.configService.get('database.url'),
@@ -22,7 +20,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       keepConnectionAlive: true,
       logging: this.configService.get('application.node_env') !== 'production',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      // migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+      migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
       cli: {
         entitiesDir: 'src',
         migrationsDir: 'src/database/migrations',

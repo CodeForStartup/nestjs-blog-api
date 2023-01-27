@@ -9,7 +9,7 @@ import {
   IsStrongPassword,
   Validate,
 } from 'class-validator';
-import { AuthProvidersEnum } from 'src/shared/constant';
+import { AuthProvidersEnum } from '../../../shared/constant';
 // import { IsExist } from 'src/utils/validators/is-exists.validator';
 
 export class CreateUserDto {

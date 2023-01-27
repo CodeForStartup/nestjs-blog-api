@@ -18,6 +18,6 @@ export class PostItem extends BaseEntity {
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
 
-  @OneToMany(() => Post, (post) => post.postItems)
+  @ManyToOne(() => Post, (post) => post.postItems)
   post: Post;
 }
