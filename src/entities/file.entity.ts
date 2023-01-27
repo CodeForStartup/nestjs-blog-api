@@ -1,18 +1,26 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Post } from './post.entity';
 import { User } from './user.entity';
-import { BaseEntity } from './base.entity';
+// import { BaseEntity } from './base.entity';
 
 @Entity()
-export class Post extends BaseEntity {
-  @Column()
-  title: string;
+export class File extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
-  description: string;
-
-  @Column()
-  slug: string;
+  fileName: string;
 
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
+
+  @OneToOne(() => Post, (post) => post.file)
+  post: Post;
 }

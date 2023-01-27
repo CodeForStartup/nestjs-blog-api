@@ -6,13 +6,12 @@ import {
   Column,
   Entity,
   Index,
-  JoinTable,
-  ManyToOne,
   OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Post } from './post.entity';
-import { AuthProvidersEnum } from './../common/constant/index';
+import { AuthProvidersEnum } from '../shared/constant/index';
+import { PostItem } from './postItem.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -31,10 +30,10 @@ export class User extends BaseEntity {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ nullable: true })
   phoneNumber: string;
 
-  @Column()
+  @Column({ nullable: true })
   birthDate: Date;
 
   @Column({ nullable: true })
@@ -43,8 +42,8 @@ export class User extends BaseEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async setPassword(): Promise<void> {
-    const salt = await bcrypt.getSalt();
-    this.password = bcrypt.hashPassword(this.password, salt);
+    const salt = await bcrypt.genSaltSync(10);
+    this.password = bcrypt.hash(this.password, salt);
   }
 
   @Index()
@@ -60,4 +59,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Post, (post) => post.user, { cascade: true })
   posts: Post[];
+
+  @OneToMany(() => PostItem, (postItem) => postItem.user, { cascade: true })
+  postItems: PostItem[];
 }

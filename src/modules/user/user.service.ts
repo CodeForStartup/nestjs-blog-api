@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationQueryDto } from 'src/shared/dto/pagination-query.dto';
 import { Repository } from 'typeorm';
 import get from 'lodash/get';
 import { CreateUserDto } from './dto/createUser.dto';

@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsDateString,
@@ -8,41 +9,50 @@ import {
   IsStrongPassword,
   Validate,
 } from 'class-validator';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { AuthProvidersEnum } from '../../../shared/constant';
+// import { IsExist } from 'src/utils/validators/is-exists.validator';
 
 export class CreateUserDto {
+  @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }) => value?.toLowerCase().trim())
   @IsString()
   username: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }) => value?.toLowerCase().trim())
-  @Validate(IsExist, ['User'], {
-    message: 'EMAIL_ALREADY_EXIST',
-  })
+  // @Validate(IsExist, ['User'], {
+  //   message: 'EMAIL_ALREADY_EXIST',
+  // })
   @IsEmail()
   email: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   firstName: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   lastName: string;
 
-  @IsNotEmpty()
+  @ApiPropertyOptional()
   @IsPhoneNumber()
-  phoneNumber: string;
+  phoneNumber?: string;
 
+  @ApiPropertyOptional()
   @IsDateString()
-  birthDate: Date;
+  birthDate?: Date;
 
+  @ApiPropertyOptional()
   @IsStrongPassword()
-  password: string;
+  password?: string;
 
+  @ApiPropertyOptional({ enum: AuthProvidersEnum })
   provider?: string;
 
+  @ApiPropertyOptional()
   socialId?: string | null;
 }

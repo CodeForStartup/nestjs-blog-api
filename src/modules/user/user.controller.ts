@@ -8,12 +8,16 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Res,
+  NotFoundException,
+  DefaultValuePipe,
 } from '@nestjs/common';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserService } from './user.service';
 
+@ApiTags('Users')
 @Controller({
   path: 'users',
   version: '1',
@@ -23,20 +27,44 @@ export class UserController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(paginationQuery: PaginationQueryDto) {
-    return this.userService.findAll(paginationQuery);
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+  })
+  findAll(
+    @Param('limit', new DefaultValuePipe(20)) limit?: number,
+    @Param('offset', new DefaultValuePipe(0)) offset?: number,
+  ) {
+    return this.userService.findAll({
+      limit,
+      offset,
+    });
   }
 
   @Get(':id')
-  @HttpCode(HttpStatus.OK)
   findOne(@Param('id') id: number) {
     return this.userService.findOne(id);
   }
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  createUser(@Res() res, @Body() createUserDto: CreateUserDto): Promise<any> {
+    try {
+      this.userService.create(createUserDto);
+
+      return res.status(HttpStatus.CREATED).json({
+        message: 'User created successfully',
+        status: HttpStatus.CREATED,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: 'Error: User not updated!',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
   }
 
   @Patch(':id')
@@ -47,6 +75,12 @@ export class UserController {
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return this.userService.softDelete(id);
+    const user = this.userService.softDelete(id);
+
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    return user;
   }
 }
