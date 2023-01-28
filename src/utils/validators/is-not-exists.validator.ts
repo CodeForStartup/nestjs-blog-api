@@ -1,5 +1,7 @@
 import {
+  registerDecorator,
   ValidatorConstraint,
+  ValidationOptions,
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { DataSource } from 'typeorm';
@@ -15,7 +17,7 @@ type ValidationEntity =
 
 @Injectable()
 @ValidatorConstraint({ name: 'IsNotExist', async: true })
-export class IsNotExist implements ValidatorConstraintInterface {
+export class IsNotExistConstraint implements ValidatorConstraintInterface {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
@@ -36,4 +38,23 @@ export class IsNotExist implements ValidatorConstraintInterface {
 
     return !entity;
   }
+
+  defaultMessage(validationArguments?: ValidationArguments): string {
+    return `${validationArguments.value} is exist`;
+  }
+}
+
+export function IsNotExist(
+  property: string[],
+  validationOptions?: ValidationOptions,
+) {
+  return (object: Record<string, any>, propertyName: string): void => {
+    registerDecorator({
+      propertyName: propertyName,
+      target: object.constructor,
+      options: validationOptions,
+      constraints: property,
+      validator: IsNotExistConstraint,
+    });
+  };
 }

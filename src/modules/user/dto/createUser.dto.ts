@@ -23,9 +23,11 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }) => value?.toLowerCase().trim())
-  @Validate(IsNotExist, ['User'], {
-    message: 'EMAIL_ALREADY_EXIST',
-  })
+  // @Validate(IsNotExist, ['User'], {
+  //   message: 'EMAIL_ALREADY_EXIST',
+  // })
+  // @IsUnique(() => Post, 'title')
+  @IsNotExist(['User'])
   @IsEmail()
   email: string;
 

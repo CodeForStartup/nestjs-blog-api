@@ -1,4 +1,6 @@
 import {
+  registerDecorator,
+  ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -9,7 +11,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 @ValidatorConstraint({ name: 'IsExist', async: true })
-export class IsExist implements ValidatorConstraintInterface {
+export class IsExistConstraint implements ValidatorConstraintInterface {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
@@ -29,4 +31,23 @@ export class IsExist implements ValidatorConstraintInterface {
 
     return Boolean(entity);
   }
+
+  defaultMessage(validationArguments?: ValidationArguments): string {
+    return `${validationArguments.value} is not exist`;
+  }
+}
+
+export function IsExist(
+  property: string,
+  validationOptions?: ValidationOptions,
+) {
+  return (object: Record<string, any>, propertyName: string): void => {
+    registerDecorator({
+      propertyName: propertyName,
+      target: object.constructor,
+      options: validationOptions,
+      constraints: [property],
+      validator: IsExistConstraint,
+    });
+  };
 }
