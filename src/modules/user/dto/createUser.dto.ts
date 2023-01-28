@@ -9,8 +9,9 @@ import {
   IsStrongPassword,
   Validate,
 } from 'class-validator';
-import { AuthProvidersEnum } from '../../../shared/constant';
-// import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { AuthProvidersEnum } from 'src/shared/constant';
+import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -22,9 +23,9 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }) => value?.toLowerCase().trim())
-  // @Validate(IsExist, ['User'], {
-  //   message: 'EMAIL_ALREADY_EXIST',
-  // })
+  @Validate(IsNotExist, ['User'], {
+    message: 'EMAIL_ALREADY_EXIST',
+  })
   @IsEmail()
   email: string;
 

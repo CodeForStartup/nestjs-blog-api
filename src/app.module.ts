@@ -32,7 +32,7 @@ import { UserModule } from './modules/user/user.module';
         port: configService.get('database.port'),
         username: configService.get('database.username'),
         password: configService.get('database.password'),
-        database: configService.get('database.database'),
+        database: configService.get('database.database_name'),
         entities: ['dist/entities/*.entity.{ts,js}'],
         migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
       }),

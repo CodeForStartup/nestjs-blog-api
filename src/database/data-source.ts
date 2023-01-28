@@ -1,12 +1,10 @@
-import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { databaseConfig } from '../config';
+// import { ConfigService } from '@nestjs/config';
+// import { databaseConfig } from '../config';
 
-const configService = new ConfigService(databaseConfig());
+// const configService = new ConfigService(databaseConfig());
 
-console.warn('configService', configService);
-console.warn('configService', configService.get('database.port'));
-
+// TODO: use configService
 const options = {
   type: 'postgres',
   keepConnectionAlive: true,
