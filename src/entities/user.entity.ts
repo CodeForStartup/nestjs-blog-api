@@ -15,7 +15,7 @@ import { PostItem } from './postItem.entity';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column({ type: 'varchar', nullable: true, unique: true })
+  @Column({ type: 'varchar', nullable: true })
   @MinLength(6)
   @MaxLength(50)
   username: string;
@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   @BeforeUpdate()
   async setPassword(): Promise<void> {
     const salt = await bcrypt.genSaltSync(10);
-    this.password = bcrypt.hash(this.password, salt);
+    this.password = await bcrypt.hash(this.password, salt);
   }
 
   @Index()
