@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { applicationConfig, databaseConfig } from './config';
+import { applicationConfig, databaseConfig, authConfig } from './config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -20,7 +20,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       isGlobal: true,
       cache: true,
       expandVariables: true,
-      load: [applicationConfig, databaseConfig],
+      load: [applicationConfig, databaseConfig, authConfig],
       validationOptions: {
         allowUnknown: true,
       },
