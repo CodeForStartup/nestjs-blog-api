@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { DataSource } from 'typeorm';
+import { applicationConfig, databaseConfig, authConfig } from 'src/config';
+import { UserModule } from 'src/modules/user/user.module';
+import { AuthModule } from 'src/modules/auth/auth.module';
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { ForgotModule } from 'src/modules/forgot/forgot.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { applicationConfig, databaseConfig, authConfig } from './config';
-import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     }),
     UserModule,
     AuthModule,
+    ForgotModule,
   ],
   controllers: [AppController],
   providers: [

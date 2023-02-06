@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from 'src/shared/dto/pagination-query.dto';
 import { Repository } from 'typeorm';
 import get from 'lodash/get';
+import { PaginationQueryDto } from 'src/shared/dto/pagination-query.dto';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { User } from '../../entities/user.entity';
+import { User } from 'src/entities/user.entity';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
 
 @Injectable()
 export class UserService {
@@ -24,11 +25,13 @@ export class UserService {
     });
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepository.findOneBy({ id });
+  async findOne(fields: EntityCondition<User>) {
+    const user = await this.userRepository.findOne({
+      where: fields,
+    });
 
     if (!user) {
-      throw new NotFoundException(`User #{id} not found`);
+      throw new NotFoundException(`User is not found`);
     }
 
     return user;
@@ -53,7 +56,9 @@ export class UserService {
   }
 
   async remove(id: number) {
-    const user = await this.findOne(id);
+    const user = await this.findOne({
+      id,
+    });
 
     return this.userRepository.remove(user);
   }

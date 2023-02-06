@@ -8,10 +8,13 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
+
+import { AuthProvidersEnum } from 'src/shared/constant/index';
 import { BaseEntity } from './base.entity';
 import { Post } from './post.entity';
-import { AuthProvidersEnum } from '../shared/constant/index';
 import { PostItem } from './postItem.entity';
+import { Forgot } from './forgot.entity';
+import { Refresh } from './refresh.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -62,4 +65,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => PostItem, (postItem) => postItem.user, { cascade: true })
   postItems: PostItem[];
+
+  @OneToMany(() => Forgot, (forgot) => forgot.user, { cascade: true })
+  forgets: Forgot[];
+
+  @OneToMany(() => Refresh, (refresh) => refresh.user, { cascade: true })
+  refreshes: Refresh[];
 }
