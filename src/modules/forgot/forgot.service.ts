@@ -34,7 +34,7 @@ export class ForgotService {
     return forgot;
   }
 
-  async create(forgot: CreateForgotDto): Promise<Forgot> {
+  async create(forgot: CreateForgotDto): Promise<Pick<Forgot, 'hash'>> {
     const user = await this.userService.findOne({ email: forgot.email });
 
     if (!user) {
@@ -63,10 +63,10 @@ export class ForgotService {
     try {
       await queryRunner.manager.save(newForgot);
 
-      this.forgotRepository
+      await this.forgotRepository
         .createQueryBuilder()
-        .update({ isActive: false })
-        .where('userId IN (:ids)', { ids: [user.id] })
+        .update(Forgot, { isActive: false })
+        .where('userId = :id', { id: user.id })
         .execute();
 
       await queryRunner.commitTransaction();
@@ -80,6 +80,8 @@ export class ForgotService {
       await queryRunner.release();
     }
 
-    return newForgot;
+    return {
+      hash: newForgot.hash,
+    };
   }
 }
