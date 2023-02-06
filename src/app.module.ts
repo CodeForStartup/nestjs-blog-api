@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { DataSource } from 'typeorm';
+import { applicationConfig, databaseConfig, authConfig } from 'src/config';
+import { UserModule } from 'src/modules/user/user.module';
+import { AuthModule } from 'src/modules/auth/auth.module';
+import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { ForgotModule } from 'src/modules/forgot/forgot.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { applicationConfig, databaseConfig } from './config';
-import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -16,7 +21,7 @@ import { UserModule } from './modules/user/user.module';
       isGlobal: true,
       cache: true,
       expandVariables: true,
-      load: [applicationConfig, databaseConfig],
+      load: [applicationConfig, databaseConfig, authConfig],
       validationOptions: {
         allowUnknown: true,
       },
@@ -40,9 +45,19 @@ import { UserModule } from './modules/user/user.module';
       dataSourceFactory: async (options) =>
         new DataSource(options).initialize(),
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     UserModule,
+    AuthModule,
+    ForgotModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}

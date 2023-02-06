@@ -13,6 +13,7 @@ import {
   DefaultValuePipe,
 } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/shared/decorators/public.decorator';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UserService } from './user.service';
@@ -47,21 +48,27 @@ export class UserController {
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.userService.findOne(id);
+    return this.userService.findOne({
+      id,
+    });
   }
 
   @Post()
-  createUser(@Res() res, @Body() createUserDto: CreateUserDto): Promise<any> {
+  @Public()
+  async createUser(
+    @Res() res,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<any> {
     try {
-      this.userService.create(createUserDto);
+      const user = await this.userService.create(createUserDto);
 
       return res.status(HttpStatus.CREATED).json({
-        message: 'User created successfully',
+        message: `User ${user.username} registration successfully.`,
         status: HttpStatus.CREATED,
       });
     } catch (error) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Error: User not updated!',
+        message: 'An error happen while creating user.',
         status: HttpStatus.BAD_REQUEST,
       });
     }
