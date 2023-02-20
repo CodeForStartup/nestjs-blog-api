@@ -4,6 +4,7 @@ import { Public } from 'src/shared/decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { EmailLoginDto } from './dto/email-login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,10 +24,10 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
-  // @Post('forgot-password')
-  // @Public()
-  // @ApiOperation({ summary: 'Forgot Password' })
-  // async forgotPassword() {
-
-  // }
+  @Post('reset-password')
+  @Public()
+  @ApiOperation({ summary: 'Reset Password' })
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
 }

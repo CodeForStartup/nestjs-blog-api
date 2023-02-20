@@ -1,3 +1,4 @@
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -63,5 +64,22 @@ export class AuthService {
     return this.forgotPasswordService.create({
       email: forgotPasswordDto.email,
     });
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    // const user = await this.userService.findOne({
+    //   email: resetPasswordDto.,
+    // });
+    // if (!user) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.NOT_FOUND,
+    //       errors: {
+    //         email: 'notFound',
+    //       },
+    //     },
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
   }
 }
