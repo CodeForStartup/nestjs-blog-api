@@ -40,6 +40,7 @@ import { AppService } from './app.service';
         database: configService.get('database.database_name'),
         entities: ['dist/entities/*.entity.{ts,js}'],
         migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        timezone: 'Z',
       }),
       inject: [ConfigService],
       dataSourceFactory: async (options) =>

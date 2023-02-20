@@ -27,7 +27,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @HttpCode(HttpStatus.OK)
   @ApiQuery({
     name: 'limit',
     required: false,
