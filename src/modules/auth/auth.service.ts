@@ -1,3 +1,4 @@
+import { get } from 'lodash/get';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -66,20 +67,56 @@ export class AuthService {
     });
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    // const user = await this.userService.findOne({
-    //   email: resetPasswordDto.,
-    // });
-    // if (!user) {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.NOT_FOUND,
-    //       errors: {
-    //         email: 'notFound',
-    //       },
-    //     },
-    //     HttpStatus.NOT_FOUND,
-    //   );
+  async isTokenValid(hash: string) {
+    const token = await this.forgotPasswordService.findOne({
+      hash,
+      isActive: true,
+    });
+
+    // TODO: need update expire time
+    // if (!token || token?.expiresIn?.getTime() < Date.now()) {
+    //   return false;
     // }
+    if (token) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    console.warn('resetPasswordDto', resetPasswordDto);
+    const token = await this.forgotPasswordService.findOne({
+      hash: resetPasswordDto.hash,
+    });
+    if (!token) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          errors: {
+            hash: 'Token is not found',
+          },
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    console.warn(token);
+    const user = await this.userService.findOne({ email: token.user.email });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          errors: {
+            hash: 'User is not found',
+          },
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.userService.update(user.id, {
+      password: resetPasswordDto.password,
+    });
   }
 }

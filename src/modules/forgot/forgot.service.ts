@@ -25,6 +25,7 @@ export class ForgotService {
   findOne(fields: EntityCondition<Forgot>) {
     const forgot = this.forgotRepository.findOne({
       where: fields,
+      relations: ['user'],
     });
 
     if (!forgot) {
@@ -51,13 +52,21 @@ export class ForgotService {
       .digest('hex');
 
     const now = new Date();
-    now.setHours(now.getHours() + 1);
+    const expiredUTCDate = new Date(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours() + 1,
+      now.getUTCMinutes(),
+      now.getUTCSeconds(),
+      now.getUTCMilliseconds(),
+    );
 
     const newForgot = this.forgotRepository.create({
       hash,
       user,
       isActive: true,
-      expiresIn: now,
+      expiresIn: expiredUTCDate,
     });
 
     try {

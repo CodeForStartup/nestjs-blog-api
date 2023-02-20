@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { AuthService } from './auth.service';
@@ -29,5 +29,18 @@ export class AuthController {
   @ApiOperation({ summary: 'Reset Password' })
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Get('is-token-valid/:hash')
+  @Public()
+  @ApiOperation({ summary: 'Check hash token is valid or not' })
+  isTokenValid(@Param('hash') hash: string) {
+    return this.authService.isTokenValid(hash);
+  }
+
+  @Post('refresh-token')
+  @ApiOperation({ summary: 'Refresh token' })
+  refreshToken() {
+    return '';
   }
 }
