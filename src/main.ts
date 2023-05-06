@@ -6,9 +6,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
 import { useContainer } from 'class-validator';
 import helmet from 'helmet';
+
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
