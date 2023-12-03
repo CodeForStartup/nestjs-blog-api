@@ -1,4 +1,3 @@
-import { get } from 'lodash/get';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -9,6 +8,8 @@ import { User } from 'src/entities/user.entity';
 import { UserService } from 'src/modules/user/user.service';
 import { ForgotService } from 'src/modules/forgot/forgot.service';
 import { EmailLoginDto } from './dto/email-login.dto';
+import { CreateUserDto } from '../user/dto/createUser.dto';
+import { MailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -16,11 +17,24 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private forgotPasswordService: ForgotService,
+    private mailsService: MailService,
   ) {}
+
+  async signUp(user: CreateUserDto): Promise<Partial<User>> {
+    const newUser = await this.userService.create(user);
+
+    await this.mailsService.registrationConfirmation(
+      newUser.email,
+      `${newUser.firstName} ${newUser.lastName}`,
+      '123',
+    );
+
+    return newUser;
+  }
 
   async validateUser(
     emailLoginDto: EmailLoginDto,
-  ): Promise<{ access_token: string; user: User }> {
+  ): Promise<{ access_token: string; user: Partial<User> }> {
     const user = await this.userService.findOne({ email: emailLoginDto.email });
 
     if (!user) {
@@ -53,7 +67,9 @@ export class AuthService {
     }
 
     return {
-      user,
+      user: {
+        email: user.email,
+      },
       access_token: this.jwtService.sign({
         id: user.id,
         email: user.email,
@@ -100,7 +116,6 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    console.warn(token);
     const user = await this.userService.findOne({ email: token.user.email });
 
     if (!user) {
@@ -115,8 +130,15 @@ export class AuthService {
       );
     }
 
-    return this.userService.update(user.id, {
+    await this.userService.update(user.id, {
       password: resetPasswordDto.password,
     });
+
+    return {
+      user: {
+        email: user.email,
+      },
+      message: 'Reset password successfully updated',
+    };
   }
 }

@@ -1,19 +1,22 @@
-import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 import { UserModule } from 'src/modules/user/user.module';
 import { ForgotModule } from 'src/modules/forgot/forgot.module';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
+import { MailModule } from '../email/email.module';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     ForgotModule,
+    MailModule,
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         isGlobal: true,

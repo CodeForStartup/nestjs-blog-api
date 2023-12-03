@@ -4,3 +4,6 @@ export enum AuthProvidersEnum {
   facebook = 'facebook',
   google = 'google',
 }
+
+export const MAIL_QUEUE = 'mail_queue';
+export const MAIL_JOB = 'mail_job';

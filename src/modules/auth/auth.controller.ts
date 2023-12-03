@@ -5,10 +5,18 @@ import { AuthService } from './auth.service';
 import { EmailLoginDto } from './dto/email-login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { CreateUserDto } from '../user/dto/createUser.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Post('signup')
+  @Public()
+  @ApiOperation({ summary: 'Email Signup' })
+  signUp(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signUp(createUserDto);
+  }
 
   @Post('login')
   @Public()
@@ -42,5 +50,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh token' })
   refreshToken() {
     return '';
+  }
+
+  @Post('logout')
+  @Public()
+  @ApiOperation({ summary: 'Log out' })
+  logout() {
+    return true;
   }
 }

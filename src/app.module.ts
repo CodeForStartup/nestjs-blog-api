@@ -1,16 +1,26 @@
-import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bull';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { DataSource } from 'typeorm';
-import { applicationConfig, databaseConfig, authConfig } from 'src/config';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+
+import {
+  applicationConfig,
+  databaseConfig,
+  authConfig,
+  redisConfig,
+} from 'src/config';
 import { UserModule } from 'src/modules/user/user.module';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { ForgotModule } from 'src/modules/forgot/forgot.module';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -21,7 +31,7 @@ import { AppService } from './app.service';
       isGlobal: true,
       cache: true,
       expandVariables: true,
-      load: [applicationConfig, databaseConfig, authConfig],
+      load: [applicationConfig, databaseConfig, authConfig, redisConfig],
       validationOptions: {
         allowUnknown: true,
       },
@@ -50,6 +60,44 @@ import { AppService } from './app.service';
       ttl: 60,
       limit: 10,
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('redis.host'),
+          port: configService.get('redis.port'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('mail.host'),
+          secure: false,
+          auth: {
+            user: configService.get('mail.user'),
+            pass: configService.get('mail.password'),
+          },
+        },
+        defaults: {
+          from: `"${configService.get(
+            'mail.default_name',
+          )}" <${configService.get('mail.default_email')}>`,
+        },
+        template: {
+          dir: __dirname + '/modules/email/templates',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+        preview: true,
+      }),
+      inject: [ConfigService],
+    }),
+
     UserModule,
     AuthModule,
     ForgotModule,
